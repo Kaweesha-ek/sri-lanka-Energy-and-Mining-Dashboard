@@ -33,28 +33,37 @@ analysis_option = st.sidebar.selectbox(
     )
 )
 
-#  Distribution by Indicator
+# Distribution by Indicator Name
 if analysis_option == 'Distribution by Indicator Name':
-    st.header('Distribution of Values by Indicator Name')
+    st.subheader(" Distribution of Indicator Values")
 
-    selected_category = st.selectbox("Select Category", sorted(df['indicator_category'].unique()))
+    selected_category = st.selectbox(" Select Category", sorted(df['indicator_category'].unique()))
     filtered_df = df[df['indicator_category'] == selected_category]
 
-    selected_indicators = st.multiselect("Select Indicator(s)", sorted(filtered_df['indicator_name'].unique()))
+    selected_indicators = st.multiselect(" Select Indicator(s)", sorted(filtered_df['indicator_name'].unique()))
+
     if selected_indicators:
         filtered_df = filtered_df[filtered_df['indicator_name'].isin(selected_indicators)]
 
-    # Plot
-    plt.figure(figsize=(10, 6))
-    sns.boxplot(x='indicator_name', y='value', data=filtered_df)
-    plt.xticks(rotation=45, ha='right')
-    plt.title(f"Value Distribution in {selected_category}")
-    plt.tight_layout() 
-    st.pyplot(plt.gcf())
+        plt.figure(figsize=(12, 6))
+        sns.boxplot(
+            x='indicator_name', 
+            y='value', 
+            data=filtered_df, 
+            palette='pastel'
+        )
+        plt.xticks(rotation=45, ha='right')
+        plt.title(f" Value Distribution in {selected_category}", fontsize=14)
+        plt.xlabel("")
+        plt.ylabel("Value")
+        plt.tight_layout()
+        st.pyplot(plt.gcf())
+    else:
+        st.info("Please select at least one indicator to display the chart.")
 
-#  Yearly Comparison by Category
+# Yearly Comparison
 elif analysis_option == 'Yearly Comparison by Category':
-    st.header('Compare Multiple Years for Selected Indicators')
+    st.subheader("Compare Years for Selected Indicators")
 
     selected_years = st.multiselect(
         "Select Year(s)", sorted(df['year'].unique()), default=[df['year'].max()]
@@ -72,39 +81,41 @@ elif analysis_option == 'Yearly Comparison by Category':
     else:
         filtered_df = category_df
 
-    # Create a consistent color palette for the selected years
-    unique_years = sorted(filtered_df['year'].unique())
-    colors = sns.color_palette("Set1", len(unique_years))
-    year_color_map = dict(zip(unique_years, colors))
+    if not filtered_df.empty:
+        unique_years = sorted(filtered_df['year'].unique())
+        colors = sns.color_palette("Set2", len(unique_years))
+        year_color_map = dict(zip(unique_years, colors))
 
-    # Determine y-axis label
-    if filtered_df['indicator_name'].str.contains("investment", case=False).any():
-        y_label = "Value (in million USD)"
-    elif filtered_df['indicator_name'].str.contains("access to electricity|renewable energy consumption|firms using banks|value lost due to electrical outages", case=False).any():
-        y_label = "Proportion (0–1 scale)"
+        if filtered_df['indicator_name'].str.contains("investment", case=False).any():
+            y_label = "Value (in million USD)"
+        elif filtered_df['indicator_name'].str.contains("access to electricity|renewable energy consumption|firms using banks|value lost due to electrical outages", case=False).any():
+            y_label = "Proportion (0–1 scale)"
+        else:
+            y_label = "Value"
+
+        plt.figure(figsize=(14, 6))
+        sns.barplot(data=filtered_df, x='indicator_name', y='value', hue='year', palette=year_color_map)
+        plt.title(f"{selected_category} Indicators Across Year(s)", fontsize=14)
+        plt.ylabel(y_label)
+        plt.xlabel("")
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
+        st.pyplot(plt.gcf())
     else:
-        y_label = "Value"
+        st.warning("No data available for the selected filters.")
 
-    # Plot
-    plt.figure(figsize=(12, 6))
-    sns.barplot(data=filtered_df, x='indicator_name', y='value', hue='year', palette=year_color_map)
-    plt.title(f"{selected_category} Indicators Across Year(s)")
-    plt.ylabel(y_label)
-    plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    st.pyplot(plt.gcf())
-
-#  Trend by Indicator 
+# Trend by Indicator
 elif analysis_option == 'Trend by Indicator':
-    st.header(' Trend Over Time for an Indicator')
+    st.subheader("Indicator Trend Over Time")
 
     selected_indicator = st.selectbox("Select Indicator", sorted(df['indicator_name'].unique()))
     ind_df = df[df['indicator_name'] == selected_indicator]
 
-    # Plot
-    plt.figure(figsize=(10, 5))
-    sns.lineplot(x='year', y='value', data=ind_df, marker='o')
-    plt.title(f"Trend Over Time: {selected_indicator}")
+    plt.figure(figsize=(12, 5))
+    sns.lineplot(x='year', y='value', data=ind_df, marker='o', color='teal', linewidth=2.5)
+    plt.title(f"Trend Over Time: {selected_indicator}", fontsize=14)
     plt.xlabel("Year")
     plt.ylabel("Value")
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.tight_layout()
     st.pyplot(plt.gcf())
