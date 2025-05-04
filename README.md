@@ -1,53 +1,53 @@
-# sri-lanka-Energy-and-Mining-Dashboard
-Streamlit dashboard analyzing Sri Lanka's energy and mining indicators using public datasets.
+# Sri Lanka Energy and Mining Dashboard
 
-# Dataset
-Source:[ World Bank - Sri Lanka Energy & Mining ](https://data.humdata.org/dataset/world-bank-energy-and-mining-indicators-for-sri-lanka )
+A Streamlit dashboard analyzing Sri Lanka's energy and mining indicators using public datasets.
 
-#Dashboard 
-https://sri-lanka-energy-and-mining-dashboard-geprx3wyqsdl6hdsef9jaz.streamlit.app/
+## Dataset
 
+Source: [World Bank - Sri Lanka Energy & Mining](https://data.humdata.org/dataset/world-bank-energy-and-mining-indicators-for-sri-lanka)
 
-# What the Project Does
-.Shows distribution of indicator values by category via box plots
-.Compares multiple years for selected indicators using grouped bar charts
-.Displays time-series trends for any selected indicator
-.All visuals are dynamic and update based on user selections
+## Dashboard
 
-# Why the Project Is Useful
+Live App: [Streamlit Dashboard](https://sri-lanka-energy-and-mining-dashboard-geprx3wyqsdl6hdsef9jaz.streamlit.app/)
+
+## What the Project Does
+
+- Shows distribution of indicator values by category via box plots  
+- Compares multiple years for selected indicators using grouped bar charts  
+- Displays time-series trends for any selected indicator  
+- All visuals are dynamic and update based on user selections
+
+## Why the Project Is Useful
+
 This dashboard helps:
-.Students, researchers, and policymakers quickly gain insights into Sri Lanka’s energy and mining sector
-.Enable data-driven understanding of development indicators
-.Convert complex raw data into accessible and interactive visuals
 
-# Aims and Objectives
-.Analyze key energy and mining indicators relevant to Sri Lanka.
-.Present trends over time using interactive visual tools.
-.Support stakeholder decisions with intuitive data exploration.
+- Students, researchers, and policymakers quickly gain insights into Sri Lanka’s energy and mining sector  
+- Enable data-driven understanding of development indicators  
+- Convert complex raw data into accessible and interactive visuals
 
-# Development Methodology
-We used a Data Science Lifecycle approach including:
+## Aims and Objectives
 
-.Data Acquisition from the World Bank. 
-.Data Cleaning & Preprocessing using Pandas.
-.Feature Engineering to categorize and normalize indicators.
-.Visualization using Streamlit.
-.Testing using manual test cases and a test log.
+- Analyze key energy and mining indicators relevant to Sri Lanka  
+- Present trends over time using interactive visual tools  
+- Support stakeholder decisions with intuitive data exploration
 
-#Files 
-.app.py
-Streamlit dashboard application for visualizing Sri Lanka’s energy and mining data.
+## Development Methodology
 
-.preprocessing.py
-Python script for cleaning and preprocessing raw data before visualization.
+We used a Data Science Lifecycle approach, including:
 
-.energy-and-mining_lka.csv
-Original raw dataset containing energy and mining statistics for Sri Lanka.
+- **Data Acquisition** from the World Bank  
+- **Data Cleaning & Preprocessing** using Pandas  
+- **Feature Engineering** to categorize and normalize indicators  
+- **Visualization** using Streamlit  
+- **Testing** using manual test cases and a test log
 
-.cleaned_energy_and_mining_lka.csv
-Cleaned dataset used directly in visualizations after preprocessing.
+## Files
 
-requirements.txt
-List of Python libraries required to run the Streamlit app (e.g., streamlit, pandas, plotly, etc.).
+- `app.py`: Streamlit dashboard application for visualizing Sri Lanka’s energy and mining data  
+- `preprocessing.py`: Python script for cleaning and preprocessing raw data before visualization  
+- `energy-and-mining_lka.csv`: Original raw dataset containing energy and mining statistics for Sri Lanka  
+- `cleaned_energy_and_mining_lka.csv`: Cleaned dataset used directly in visualizations after preprocessing  
+- `requirements.txt`: List of Python libraries required to run the Streamlit app (e.g., streamlit, pandas, plotly, etc.)
 
+---
 
