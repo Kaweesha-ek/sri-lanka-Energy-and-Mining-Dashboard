@@ -16,6 +16,12 @@ df = load_data()
 
 # Dashboard title
 st.title("Sri Lanka Energy & Mining Dashboard")
+st.markdown(
+    "Welcome to the interactive dashboard that provides insights into "
+    "**Sri Lanka's energy and mining sectors** based on World Bank indicators. "
+    "Use the sidebar to explore trends, compare years, and dive into distributions."
+)
+st.markdown("---")
 
 # Sidebar navigation
 analysis_option = st.sidebar.selectbox(
