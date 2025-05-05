@@ -23,6 +23,21 @@ st.markdown(
 )
 st.markdown("---")
 
+# KPIs
+latest_year = df['year'].max()
+total_indicators = df['indicator_name'].nunique()
+average_value = df['value'].mean()
+
+kpi1, kpi2, kpi3 = st.columns(3)
+with kpi1:
+    st.metric(label="Latest Year", value=int(latest_year))
+with kpi2:
+    st.metric(label="Total Indicators", value=total_indicators)
+with kpi3:
+    st.metric(label="Average Value", value=f"{average_value:,.2f}")
+
+st.markdown("---")
+
 # Sidebar navigation
 analysis_option = st.sidebar.selectbox(
     'Select Analysis',
