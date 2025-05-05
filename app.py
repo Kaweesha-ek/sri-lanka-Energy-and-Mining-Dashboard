@@ -2,8 +2,9 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly.express as px
 
-#  Page config must be the first Streamlit command
+# Page config
 st.set_page_config(page_title="Sri Lanka Energy & Mining Dashboard", layout="wide")
 
 # Load dataset
@@ -18,25 +19,23 @@ df = load_data()
 st.title("Sri Lanka Energy & Mining Dashboard")
 st.markdown(
     "Welcome to the interactive dashboard that provides insights into "
-    "**Sri Lanka's energy and mining sectors** based on World Bank indicators. "
+    "*Sri Lanka's energy and mining sectors* based on World Bank indicators. "
     "Use the sidebar to explore trends, compare years, and dive into distributions."
 )
 st.markdown("---")
 
-# KPIs
+# KPIs (Your original KPI board)
 latest_year = df['year'].max()
 total_indicators = df['indicator_name'].nunique()
 average_value = df['value'].mean()
 
-kpi1, kpi2, kpi3 = st.columns(3)
-with kpi1:
+col1, col2, col3 = st.columns(3)
+with col1:
     st.metric(label="Latest Year", value=int(latest_year))
-with kpi2:
+with col2:
     st.metric(label="Total Indicators", value=total_indicators)
-with kpi3:
-    st.metric(label="Average Value", value=f"{average_value:,.2f}")
-
-st.markdown("---")
+with col3:
+    st.metric(label="Average Value", value=f"{average_value:.2f}")
 
 # Sidebar navigation
 analysis_option = st.sidebar.selectbox(
@@ -48,48 +47,41 @@ analysis_option = st.sidebar.selectbox(
     )
 )
 
+
 # Distribution by Indicator Name
 if analysis_option == 'Distribution by Indicator Name':
-    st.subheader(" Distribution of Indicator Values")
+    st.subheader("Distribution of Indicator Values")
 
-    selected_category = st.selectbox(" Select Category", sorted(df['indicator_category'].unique()))
+    selected_category = st.selectbox("Select Category", sorted(df['indicator_category'].unique()))
     filtered_df = df[df['indicator_category'] == selected_category]
 
-    selected_indicators = st.multiselect(" Select Indicator(s)", sorted(filtered_df['indicator_name'].unique()))
+    selected_indicators = st.multiselect("Select Indicator(s)", sorted(filtered_df['indicator_name'].unique()))
 
     if selected_indicators:
         filtered_df = filtered_df[filtered_df['indicator_name'].isin(selected_indicators)]
-
-        plt.figure(figsize=(12, 6))
-        sns.boxplot(
-            x='indicator_name', 
-            y='value', 
-            data=filtered_df, 
-            palette='pastel'
+        fig = px.box(
+            filtered_df,
+            x='indicator_name',
+            y='value',
+            color='indicator_name',
+            title=f"Value Distribution in {selected_category}",
+            labels={'value': 'Value', 'indicator_name': 'Indicator'},
+            template='plotly_white'
         )
-        plt.xticks(rotation=45, ha='right')
-        plt.title(f" Value Distribution in {selected_category}", fontsize=14)
-        plt.xlabel("")
-        plt.ylabel("Value")
-        plt.tight_layout()
-        st.pyplot(plt.gcf())
+        fig.update_layout(xaxis_tickangle=-45, showlegend=False)
+        st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("Please select at least one indicator to display the chart.")
 
-# Yearly Comparison
+# Yearly Comparison by Category 
 elif analysis_option == 'Yearly Comparison by Category':
     st.subheader("Compare Years for Selected Indicators")
 
-    selected_years = st.multiselect(
-        "Select Year(s)", sorted(df['year'].unique()), default=[df['year'].max()]
-    )
-
+    selected_years = st.multiselect("Select Year(s)", sorted(df['year'].unique()), default=[df['year'].max()])
     selected_category = st.selectbox("Choose Category", sorted(df['indicator_category'].unique()))
     category_df = df[(df['year'].isin(selected_years)) & (df['indicator_category'] == selected_category)]
 
-    selected_indicators = st.multiselect(
-        "Select Indicator(s)", sorted(category_df['indicator_name'].unique())
-    )
+    selected_indicators = st.multiselect("Select Indicator(s)", sorted(category_df['indicator_name'].unique()))
 
     if selected_indicators:
         filtered_df = category_df[category_df['indicator_name'].isin(selected_indicators)]
@@ -97,27 +89,21 @@ elif analysis_option == 'Yearly Comparison by Category':
         filtered_df = category_df
 
     if not filtered_df.empty:
-        unique_years = sorted(filtered_df['year'].unique())
-        colors = sns.color_palette("Set2", len(unique_years))
-        year_color_map = dict(zip(unique_years, colors))
-
-        if filtered_df['indicator_name'].str.contains("investment", case=False).any():
-            y_label = "Value (in million USD)"
-        elif filtered_df['indicator_name'].str.contains("access to electricity|renewable energy consumption|firms using banks|value lost due to electrical outages", case=False).any():
-            y_label = "Proportion (0–1 scale)"
-        else:
-            y_label = "Value"
-
-        plt.figure(figsize=(14, 6))
-        sns.barplot(data=filtered_df, x='indicator_name', y='value', hue='year', palette=year_color_map)
-        plt.title(f"{selected_category} Indicators Across Year(s)", fontsize=14)
-        plt.ylabel(y_label)
-        plt.xlabel("")
-        plt.xticks(rotation=45, ha='right')
-        plt.tight_layout()
-        st.pyplot(plt.gcf())
+        fig = px.bar(
+            filtered_df,
+            x='indicator_name',
+            y='value',
+            color=filtered_df['year'].astype(str),  #Force year to categorical
+            barmode='group',
+            title=f"{selected_category} Indicators Across Year(s)",
+            labels={'value': 'Value', 'indicator_name': 'Indicator', 'color': 'Year'},
+            template='plotly_white'
+        )
+        fig.update_layout(xaxis_tickangle=-45)
+        st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("No data available for the selected filters.")
+
 
 # Trend by Indicator
 elif analysis_option == 'Trend by Indicator':
@@ -126,11 +112,16 @@ elif analysis_option == 'Trend by Indicator':
     selected_indicator = st.selectbox("Select Indicator", sorted(df['indicator_name'].unique()))
     ind_df = df[df['indicator_name'] == selected_indicator]
 
-    plt.figure(figsize=(12, 5))
-    sns.lineplot(x='year', y='value', data=ind_df, marker='o', color='teal', linewidth=2.5)
-    plt.title(f"Trend Over Time: {selected_indicator}", fontsize=14)
-    plt.xlabel("Year")
-    plt.ylabel("Value")
-    plt.grid(True, linestyle='--', alpha=0.5)
-    plt.tight_layout()
-    st.pyplot(plt.gcf())
+    fig = px.line(
+        ind_df,
+        x='year',
+        y='value',
+        markers=True,
+        title=f"Trend Over Time: {selected_indicator}",
+        labels={'value': 'Value', 'year': 'Year'},
+        template='plotly_white'
+    )
+    fig.update_traces(line=dict(color='teal', width=3))
+    fig.update_layout(xaxis=dict(dtick=1))
+    st.plotly_chart(fig, use_container_width=True)
+
