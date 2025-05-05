@@ -37,6 +37,14 @@ with col2:
 with col3:
     st.metric(label="Average Value", value=f"{average_value:.2f}")
 
+    st.markdown("Key Insights")
+st.markdown("""
+- **Energy Intensity** has declined from **3.0 (2000)** to **1.67 (2021)** – showing improved energy efficiency.
+- **Access to Electricity** remains low (around **1%** from 2000–2022), suggesting rural electrification issues.
+- **Renewable Energy Consumption** is minimal (**< 0.8% since 1990**), reflecting poor adoption.
+- **Fuel Imports** are high (**24.8% in 2023**), indicating dependence on foreign energy sources.
+""")
+
 # Sidebar navigation
 analysis_option = st.sidebar.selectbox(
     'Select Analysis',
